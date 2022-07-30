@@ -6,7 +6,7 @@ from airflow.utils.dates import days_ago
 
 from datetime import datetime, timedelta
 
-with DAG('insert_syarif',
+with DAG('daily_syarif',
     schedule_interval='0 0 * * *',
     start_date=datetime(2022, 7, 1)       
 ) as dag:
@@ -20,4 +20,9 @@ with DAG('insert_syarif',
         bash_command="""python3 /home/hadoop/airflow/dags/ingest/syarif/ingest_orders.py {{ execution_date.format('YYYY-MM-DD') }}"""
     )
 
-    start >> ingest_orders
+    to_datalake_orders = BashOperator(
+        task_id='to_datalake_orders',
+        bash_command="""gsutil cp /home/hadoop/output/syarif/orders/orders_{{ execution_date.format('YYYY-MM-DD') }}.csv gs://digitalskola-de-batch7/syarif/staging/orders/"""
+    )
+
+    start >> ingest_orders >> to_datalake_orders
