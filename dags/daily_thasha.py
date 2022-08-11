@@ -27,7 +27,7 @@ for data in data_list:
 
     to_datalake = BashOperator(
         task_id='to_datalake_'+data,
-        bash_command="""gsutil cp /root/output/thasha/{{params.data}}/{{params.data}}.py_{{ execution_date.format('YYYY-MM-DD') }}.csv gs://digitalskola-de-batch7/thasha/staging/{{params.data}}/""",
+        bash_command="""gsutil cp /root/output/thasha/{{params.data}}/{{params.data}}_{{ execution_date.format('YYYY-MM-DD') }}.csv gs://digitalskola-de-batch7/thasha/staging/{{params.data}}/""",
         params = {'data': data}
     )
     start >> ingest >> to_datalake
